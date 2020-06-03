@@ -25,7 +25,9 @@ function App({ fetchNews, hasError, isLoading, data }) {
          <ul>
            {
              data.articles.map(a =>
-               <li key={a.publishedAt}>{a.title}</li>
+               <li key={a.publishedAt}>
+                 <a href={a.url} target="_blank">{a.title}</a>
+               </li>
               )
            }
          </ul>
