@@ -1,23 +1,27 @@
 const initialState = {
   isLoading: true,
   hasError: false,
-  data: {},
+  articles: {},
 }
 
 const actionTypes = {
   initiateFetch: "INIT_FETCH",
   receiveData: "FETCH_SUCCESS",
-  receiveError: "FETCH_ERROR"
+  receiveError: "FETCH_ERROR",
+  reorderArticles: "SET_ARTICLES"
+
 }
 
 const initiateFetch = () => ({ type: actionTypes.initiateFetch });
-const receiveData = (data) => ({ type: actionTypes.receiveData, data: data });
+const receiveData = (articles) => ({ type: actionTypes.receiveData, articles: articles });
 const receiveError = () => ({ type: actionTypes.receiveError });
+const reorderArticles = (articles) => ({ type: actionTypes.reorderArticles, articles: articles });
+
 const fetchNews = url => dispatch => {
   dispatch(initiateFetch());
   fetch(url).then(res => res.json())
   .then(data => {
-    dispatch(receiveData(data || []));
+    dispatch(receiveData(data.articles || []));
   })
   .catch(error => {
     console.log('fetchError');
@@ -29,7 +33,8 @@ const actionCreators = {
   initiateFetch,
   receiveData,
   receiveError,
-  fetchNews
+  fetchNews,
+  reorderArticles
 }
 
 function reducer(state, action) {
@@ -40,7 +45,7 @@ function reducer(state, action) {
         ...state,
         isLoading: true,
         hasError: false,
-        data: {}
+        articles: {}
       }
     }
     case actionTypes.receiveData: {
@@ -48,13 +53,19 @@ function reducer(state, action) {
         ...state,
         isLoading: false,
         hasError: false,
-        data: action.data
+        articles: action.articles
+      }
+    }
+    case actionTypes.reorderArticles: {
+      return {
+        ...state,
+        articles: action.articles,
       }
     }
     case actionTypes.receiveError : {
       console.log('An error happened!'); // TODO: handle errors better
       return {
-        data: {},
+        articles: {},
         isLoading: false,
         hasError: true,
       }
