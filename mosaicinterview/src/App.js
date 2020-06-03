@@ -7,18 +7,27 @@ import { connect } from 'react-redux';
 
 const API_KEY = '7ffff7bc93f34291a600f8d927d1ad96'; // move this into env.json
 const baseUrl = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}`;
-const searchBaseUrl = `https://newsapi.org/v2/everything?apiKey=${API_KEY}`;
+const searchBaseUrl = `https://newsapi.org/v2/everything?apiKey=${API_KEY}&pageSize=10`;
 
 function App({ fetchNews, hasError, isLoading, data }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [queryTerm, setQueryTerm] = useState('');
+  const [page, setPage] = useState(1); // I'll be refetching more than necessary, I'll take that's ok for now
 
   useEffect(() => {
     fetchNews(baseUrl);
   }, [fetchNews]) // hmmm, having fetchNews in Here
 
+  useEffect(() => {
+    if (queryTerm) {
+      fetchNews(`${searchBaseUrl}&q=${queryTerm}&page=${page}`);
+    }
+  }, [fetchNews, queryTerm, page]);
+
   function handleSubmit(evt) {
     evt.preventDefault();
-    fetchNews(`${searchBaseUrl}&q=${searchTerm}`);
+    setPage(1); // reset pagination
+    setQueryTerm(searchTerm);
   }
 
   return (
@@ -39,16 +48,19 @@ function App({ fetchNews, hasError, isLoading, data }) {
            </ul>
          }
         </div>
-       <form onSubmit={handleSubmit}>
-         <label htmlFor="searchInput">Find news about:</label>
-         <input
-           type="text"
-           value={searchTerm}
-           id="searchInput"
-           onChange={e => setSearchTerm(e.target.value)}
-         />
-         <button type="submit">Submit</button>
-       </form>
+        <div>
+           <form onSubmit={handleSubmit}>
+             <label htmlFor="searchInput">Find news about:</label>
+             <input
+               type="text"
+               value={searchTerm}
+               id="searchInput"
+               onChange={e => setSearchTerm(e.target.value)}
+             />
+             <button type="submit">Submit</button>
+           </form>
+           <input type="number" value={page} onChange={evt => setPage(evt.target.value)}/>
+        </div>
       </header>
     </main>
   );
