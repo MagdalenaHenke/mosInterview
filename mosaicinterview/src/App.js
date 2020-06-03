@@ -34,11 +34,10 @@ function App({ fetchNews, hasError, isLoading, data }) {
     <main className="App">
       <header className="App-header">
         <div>
-
          {hasError ? <div>Some error happened</div> :
           isLoading ? <div>Loading.</div> :
            <ul>
-             { data &&
+             { data && data.articles &&
                data.articles.map(a =>
                  <li key={a.publishedAt}>
                    <a href={a.url} target="_blank" rel="noopener noreferrer">{a.title}</a>
@@ -59,7 +58,12 @@ function App({ fetchNews, hasError, isLoading, data }) {
              />
              <button type="submit">Submit</button>
            </form>
-           <input type="number" value={page} onChange={evt => setPage(evt.target.value)}/>
+           <input
+             type="number"
+             min={1}
+             value={page}
+             onChange={evt => setPage(evt.target.value)}
+            />
         </div>
       </header>
     </main>

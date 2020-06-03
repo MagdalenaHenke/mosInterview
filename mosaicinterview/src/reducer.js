@@ -10,20 +10,26 @@ const actionTypes = {
   receiveError: "FETCH_ERROR"
 }
 
+const initiateFetch = () => ({ type: actionTypes.initiateFetch });
+const receiveData = (data) => ({ type: actionTypes.receiveData, data: data });
+const receiveError = () => ({ type: actionTypes.receiveError });
+const fetchNews = url => dispatch => {
+  dispatch(initiateFetch());
+  fetch(url).then(res => res.json())
+  .then(data => {
+    dispatch(receiveData(data || []));
+  })
+  .catch(error => {
+    console.log('fetchError');
+    dispatch(receiveError());
+  })
+}
+
 const actionCreators = {
-  initiateFetch: () => ({ type: actionTypes.initiateFetch }),
-  receiveData: (data) => ({ type: actionTypes.receiveData, data: data }),
-  receiveError: () => ({ type: actionTypes.receiveError }),
-  fetchNews: url => dispatch => {
-    dispatch(actionCreators.initiateFetch());
-    fetch(url).then(res => res.json())
-    .then(data => {
-      dispatch(actionCreators.receiveData(data || []));
-    })
-    .catch(error => {
-      dispatch(actionCreators.receiveError());
-    })
-  }
+  initiateFetch,
+  receiveData,
+  receiveError,
+  fetchNews
 }
 
 function reducer(state, action) {
@@ -48,7 +54,7 @@ function reducer(state, action) {
     case actionTypes.receiveError : {
       console.log('An error happened!'); // TODO: handle errors better
       return {
-        ...state,
+        data: {},
         isLoading: false,
         hasError: true,
       }
